@@ -10,90 +10,169 @@ function todayString() {
 }
 
 function daysBetween(a, b) {
-  const oneDay = 1000 * 60 * 60 * 24;
+
+  const oneDay =
+    1000 * 60 * 60 * 24;
 
   return Math.floor(
-    (new Date(a) - new Date(b)) / oneDay
+    (new Date(a) - new Date(b)) /
+    oneDay
   );
 }
 
 function loadData() {
+
   return {
+
     streak:
-      parseInt(localStorage.getItem("readingStreak")) || 0,
+      parseInt(
+        localStorage.getItem(
+          "readingStreak"
+        )
+      ) || 0,
 
     lastRead:
-      localStorage.getItem("lastReadDate")
+      localStorage.getItem(
+        "lastReadDate"
+      )
   };
 }
 
-function saveData(streak, date) {
-  localStorage.setItem("readingStreak", streak);
-  localStorage.setItem("lastReadDate", date);
+function saveData(
+  streak,
+  date
+) {
+
+  localStorage.setItem(
+    "readingStreak",
+    streak
+  );
+
+  localStorage.setItem(
+    "lastReadDate",
+    date
+  );
 }
 
 function updateStreak() {
-  let { streak, lastRead } = loadData();
 
-  const today = todayString();
+  let {
+    streak,
+    lastRead
+  } = loadData();
+
+  const today =
+    todayString();
 
   if (lastRead) {
-    const diff = daysBetween(today, lastRead);
+
+    const diff =
+      daysBetween(
+        today,
+        lastRead
+      );
 
     if (diff > 1) {
+
       streak = 0;
-      saveData(streak, lastRead);
+
+      saveData(
+        streak,
+        lastRead
+      );
     }
   }
 
-  streakEl.textContent = streak;
+  streakEl.textContent =
+    streak;
 
-  const alreadyRead = lastRead === today;
+  const alreadyRead =
+    lastRead === today;
 
-  button.disabled = alreadyRead;
+  button.disabled =
+    alreadyRead;
 
-  statusEl.textContent = alreadyRead
-    ? "Today's reading logged ✿"
-    : "Read for a few minutes and bloom another petal.";
+  statusEl.textContent =
+    alreadyRead
+      ? "Today's reading logged ✿"
+      : "Read for a few minutes and bloom another petal.";
 
   drawBloom(streak);
 }
 
 function logReading() {
-  let { streak, lastRead } = loadData();
 
-  const today = todayString();
+  let {
+    streak,
+    lastRead
+  } = loadData();
 
-  if (lastRead === today) return;
+  const today =
+    todayString();
+
+  if (
+    lastRead === today
+  ) return;
 
   if (lastRead) {
-    const diff = daysBetween(today, lastRead);
+
+    const diff =
+      daysBetween(
+        today,
+        lastRead
+      );
 
     if (diff === 1) {
-      streak += 1;
+      streak++;
     } else {
       streak = 1;
     }
+
   } else {
+
     streak = 1;
   }
 
-  saveData(streak, today);
+  saveData(
+    streak,
+    today
+  );
 
   updateStreak();
 }
 
-function createPetal(x, y, rotation, active) {
-  const petal = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "ellipse"
+function createPetal(
+  x,
+  y,
+  rotation,
+  active
+) {
+
+  const petal =
+    document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "ellipse"
+    );
+
+  petal.setAttribute(
+    "cx",
+    x
   );
 
-  petal.setAttribute("cx", x);
-  petal.setAttribute("cy", y);
+  petal.setAttribute(
+    "cy",
+    y
+  );
 
-  petal.setAttribute("rx", 18);
-  petal.setAttribute("ry", 42);
+  petal.setAttribute(
+    "rx",
+    18
+  );
+
+  petal.setAttribute(
+    "ry",
+    42
+  );
 
   petal.setAttribute(
     "fill",
@@ -103,42 +182,59 @@ function createPetal(x, y, rotation, active) {
   );
 
   petal.setAttribute(
-    "transform",
-    `rotate(${rotation} ${x} ${y})`
+    "opacity",
+    active
+      ? "1"
+      : ".55"
   );
 
   petal.setAttribute(
-    "opacity",
-    active ? "1" : ".55"
+    "transform",
+    `rotate(${rotation} ${x} ${y})`
   );
 
   return petal;
 }
 
 function drawBloom(streak) {
+
   bloom.innerHTML = "";
 
   const activePetals =
-    Math.min(streak, TOTAL_PETALS);
+    Math.min(
+      streak,
+      TOTAL_PETALS
+    );
 
   const centerX = 150;
   const centerY = 150;
+
   const radius = 80;
 
-  for (let i = 0; i < TOTAL_PETALS; i++) {
+  for (
+    let i = 0;
+    i < TOTAL_PETALS;
+    i++
+  ) {
+
     const angle =
-      (Math.PI * 2 * i) / TOTAL_PETALS;
+      (Math.PI * 2 * i) /
+      TOTAL_PETALS;
 
     const x =
       centerX +
-      Math.cos(angle) * radius;
+      Math.cos(angle) *
+      radius;
 
     const y =
       centerY +
-      Math.sin(angle) * radius;
+      Math.sin(angle) *
+      radius;
 
     const rotation =
-      (angle * 180) / Math.PI + 90;
+      (angle * 180) /
+        Math.PI +
+      90;
 
     bloom.appendChild(
       createPetal(
@@ -149,19 +245,6 @@ function drawBloom(streak) {
       )
     );
   }
-
-  const centerCircle =
-    document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "circle"
-    );
-
-  centerCircle.setAttribute("cx", 150);
-  centerCircle.setAttribute("cy", 150);
-  centerCircle.setAttribute("r", 18);
-  centerCircle.setAttribute("fill", "#fff");
-
-  bloom.appendChild(centerCircle);
 }
 
 button.addEventListener(
